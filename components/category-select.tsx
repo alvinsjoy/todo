@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
+import { LuPlus } from "react-icons/lu";
 import {
   Select,
   SelectContent,
@@ -96,7 +96,7 @@ export function CategorySelect({
                 variant="ghost"
                 className="relative w-full justify-start font-normal"
               >
-                <Plus className="mr-2 h-4 w-4" />
+                <LuPlus className="mr-2 h-4 w-4" />
                 Add new category
               </Button>
             </DialogTrigger>
