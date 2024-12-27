@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { Category } from "@/types/category";
-import { DEFAULT_CATEGORIES } from "@/lib/constants";
 
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -12,29 +11,14 @@ export function useCategories() {
 
   const fetchCategories = async () => {
     try {
-      const { data: userCategories, error: userError } = await supabase
+      const { data: allCategories, error } = await supabase
         .from("categories")
         .select("*")
         .order("name");
 
-      if (userError) throw userError;
+      if (error) throw error;
 
-      const allCategories = [
-        ...DEFAULT_CATEGORIES,
-        ...(userCategories || []).map((cat) => ({
-          ...cat,
-          is_default: false,
-        })),
-      ];
-
-      const sortedCategories = allCategories.sort((a, b) => {
-        if (a.is_default === b.is_default) {
-          return a.name.localeCompare(b.name);
-        }
-        return a.is_default ? -1 : 1;
-      });
-
-      setCategories(sortedCategories);
+      setCategories(allCategories || []);
     } catch (error: any) {
       toast.error("Failed to fetch categories", {
         description: error.message,
