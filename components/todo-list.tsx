@@ -9,6 +9,7 @@ import { FiCheck, FiTrash2, FiClock, FiEdit2 } from "react-icons/fi";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { EditTodoDialog } from "@/components/edit-todo-dialog";
 import { supabase } from "@/lib/supabase";
 import { Todo } from "@/types/todo";
@@ -28,6 +29,12 @@ const priorityColors = {
 
 export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+
+  const completionPercentage = todos.length
+    ? Math.round(
+        (todos.filter((todo) => todo.is_completed).length / todos.length) * 100
+      )
+    : 0;
 
   const handleToggleComplete = async (todo: Todo) => {
     const { error } = await supabase
@@ -72,7 +79,19 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-medium text-muted-foreground">
+            Progress
+          </h2>
+          <span className="text-sm font-medium text-muted-foreground">
+            {completionPercentage}%
+          </span>
+        </div>
+        <Progress value={completionPercentage} className="h-2" />
+      </div>
+
       <AnimatePresence>
         {sortedTodos.map((todo) => (
           <motion.div
