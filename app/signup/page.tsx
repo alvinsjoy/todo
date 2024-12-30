@@ -1,5 +1,3 @@
-"use client";
-
 import { SignUpForm } from "@/components/sign-up-form";
 import { AuthLayout } from "@/components/auth-layout";
 

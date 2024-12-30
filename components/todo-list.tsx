@@ -89,7 +89,7 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
             {completionPercentage}%
           </span>
         </div>
-        <Progress value={completionPercentage} className="h-2" />
+        <Progress value={completionPercentage} />
       </div>
 
       <AnimatePresence>
