@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import confetti from "canvas-confetti";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -29,12 +30,39 @@ const priorityColors = {
 
 export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const [prevCompletion, setPrevCompletion] = useState(0);
 
   const completionPercentage = todos.length
     ? Math.round(
         (todos.filter((todo) => todo.is_completed).length / todos.length) * 100
       )
     : 0;
+
+  useEffect(() => {
+    if (
+      completionPercentage === 100 &&
+      prevCompletion !== 100 &&
+      progressRef.current
+    ) {
+      const rect = progressRef.current.getBoundingClientRect();
+      const x = (rect.left + rect.right) / 2 / window.innerWidth;
+      const y = rect.top / window.innerHeight;
+
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { x, y },
+        colors: ["#22c55e", "#3b82f6", "#f59e0b", "#ec4899"],
+        ticks: 200,
+        gravity: 1.2,
+        scalar: 1.2,
+        shapes: ["circle", "square"],
+        zIndex: 9999,
+      });
+    }
+    setPrevCompletion(completionPercentage);
+  }, [completionPercentage, prevCompletion]);
 
   const handleToggleComplete = async (todo: Todo) => {
     const { error } = await supabase
@@ -89,7 +117,9 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
             {completionPercentage}%
           </span>
         </div>
-        <Progress value={completionPercentage} />
+        <div ref={progressRef}>
+          <Progress value={completionPercentage} />
+        </div>
       </div>
 
       <AnimatePresence>
