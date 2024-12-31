@@ -16,30 +16,55 @@ import type { Todo } from "@/types/todo";
 export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const {
-    categories,
-    isLoading: isCategoriesLoading,
-    refetch: refetchCategories,
-  } = useCategories();
+  const [isLoading, setIsLoading] = useState(true);
+  const { categories, isLoading: isCategoriesLoading } = useCategories();
   const router = useRouter();
 
   const fetchTodos = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("todos")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (error) {
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("todos")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setTodos(data || []);
+    } catch (error: any) {
+      console.error("Error fetching todos:", error);
       toast.error("Failed to fetch todos");
-      return;
+    } finally {
+      setIsLoading(false);
     }
-
-    setTodos(data);
-    refetchCategories();
-  }, [refetchCategories]);
+  }, []);
 
   useEffect(() => {
     fetchTodos();
+    const channel = supabase
+      .channel("todos_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "todos",
+        },
+        () => {
+          fetchTodos();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
   }, [fetchTodos]);
 
   const handleSignOut = async () => {
@@ -53,6 +78,17 @@ export default function TodoPage() {
       });
     }
   };
+
+  if (isLoading || isCategoriesLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
