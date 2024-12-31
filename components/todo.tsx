@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { toast } from "sonner";
@@ -16,14 +16,14 @@ import type { Todo } from "@/types/todo";
 export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { categories, isLoading: isCategoriesLoading } = useCategories();
+  const {
+    categories,
+    isLoading: isCategoriesLoading,
+    refetch: refetchCategories,
+  } = useCategories();
   const router = useRouter();
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
-
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     const { data, error } = await supabase
       .from("todos")
       .select("*")
@@ -35,7 +35,12 @@ export default function TodoPage() {
     }
 
     setTodos(data);
-  };
+    refetchCategories();
+  }, [refetchCategories]);
+
+  useEffect(() => {
+    fetchTodos();
+  }, [fetchTodos]);
 
   const handleSignOut = async () => {
     try {
