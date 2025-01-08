@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { FiMail, FiLock } from "react-icons/fi";
+import { FiMail, FiLock, FiAtSign } from "react-icons/fi";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -76,11 +77,12 @@ export function SignInForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>Email</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <FiMail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                    <FiAtSign className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                     <Input
-                      placeholder="Email"
+                      placeholder="john@example.com"
                       className="pl-10"
                       {...field}
                       disabled={isLoading}
@@ -96,12 +98,13 @@ export function SignInForm() {
             name="password"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <div className="relative">
                     <FiLock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                     <Input
                       type="password"
-                      placeholder="Password"
+                      placeholder="••••••••"
                       className="pl-10"
                       {...field}
                       disabled={isLoading}
