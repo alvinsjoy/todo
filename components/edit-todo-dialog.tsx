@@ -75,7 +75,7 @@ export function EditTodoDialog({
       title: todo.title,
       description: todo.description || "",
       priority: todo.priority as "low" | "medium" | "high",
-      category_id: todo.category_id,
+      category_id: todo.category_id || "",
       dueDate: todo.due_date ? new Date(todo.due_date) : undefined,
     },
   });

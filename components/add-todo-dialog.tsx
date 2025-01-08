@@ -74,6 +74,7 @@ export function AddTodoDialog({
       title: "",
       description: "",
       priority: "medium",
+      category_id: "",
     },
   });
 
