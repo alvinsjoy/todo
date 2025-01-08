@@ -139,7 +139,9 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
             <Card
               className={cn(
                 "p-4 transition-all duration-300",
-                todo.is_completed ? "bg-muted" : "bg-card hover:shadow-md"
+                todo.is_completed
+                  ? "bg-muted"
+                  : "bg-card hover:shadow-lg dark:hover:shadow-white/10 hover:shadow-black/5"
               )}
             >
               <div className="flex items-start justify-between gap-4">

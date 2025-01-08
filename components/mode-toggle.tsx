@@ -11,7 +11,7 @@ export function ModeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="text-muted-foreground hover:text-foreground dark:hover:text-foreground rounded-full"
+      className="text-muted-foreground hover:text-foreground rounded-full"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
       <RxSun className="absolute w-[1.2rem] h-[1.2rem] rotate-0 scale-100 transition-transform ease-in-out duration-500 dark:-rotate-90 dark:scale-0" />

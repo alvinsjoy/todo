@@ -122,7 +122,9 @@ export function EditTodoDialog({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>
+                    Title <span className="text-destructive">*</span>
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="Enter todo title" {...field} />
                   </FormControl>
@@ -148,13 +150,17 @@ export function EditTodoDialog({
               name="category_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <CategorySelect
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    categories={categories}
-                    onCategoryCreated={refetchCategories}
-                  />
+                  <FormLabel>
+                    Category <span className="text-destructive">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <CategorySelect
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      categories={categories}
+                      onCategoryCreated={refetchCategories}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
