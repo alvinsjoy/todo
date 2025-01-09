@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiMail } from "react-icons/fi";
+import { FaMagic } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
@@ -67,7 +67,7 @@ export function MagicLink({ getEmail }: MagicLinkProps) {
           "Sending magic link..."
         ) : (
           <>
-            <FiMail className="mr-2 h-4 w-4" /> Sign in with Magic Link
+            <FaMagic className="mr-2 h-4 w-4" /> Sign in with Magic Link
           </>
         )}
       </Button>
