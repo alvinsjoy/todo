@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { FiMail, FiLock, FiAtSign } from "react-icons/fi";
+import { FiLock, FiAtSign } from "react-icons/fi";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MagicLink } from "@/components/magic-link";
 import { supabase } from "@/lib/supabase";
 
 const formSchema = z.object({
@@ -120,6 +121,7 @@ export function SignInForm() {
           </Button>
         </form>
       </Form>
+      <MagicLink getEmail={() => form.getValues("email")} />
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
           Don&apos;t have an account?{" "}

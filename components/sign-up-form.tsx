@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { MagicLink } from "@/components/magic-link";
 import { supabase } from "@/lib/supabase";
 
 const formSchema = z
@@ -149,6 +150,7 @@ export function SignUpForm() {
           </Button>
         </form>
       </Form>
+      <MagicLink getEmail={() => form.getValues("email")} />
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
