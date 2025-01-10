@@ -1,4 +1,4 @@
-import VerifyPage from "@/components/verify";
+import VerifyPage from "@/components/pages/verify";
 
 export default function Page() {
   return <VerifyPage />;

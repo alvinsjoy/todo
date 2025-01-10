@@ -2,12 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 import { Category } from "@/types/category";
 
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const supabase = createClient();
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -37,7 +38,7 @@ export function useCategories() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     fetchCategories();
@@ -59,7 +60,7 @@ export function useCategories() {
     return () => {
       channel.unsubscribe();
     };
-  }, [fetchCategories]);
+  }, [fetchCategories, supabase]);
 
   return {
     categories,

@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { EditTodoDialog } from "@/components/edit-todo-dialog";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 import { Todo } from "@/types/todo";
 import { Category } from "@/types/category";
 
@@ -32,6 +32,7 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [prevCompletion, setPrevCompletion] = useState(0);
+  const supabase = createClient();
 
   const completionPercentage = todos.length
     ? Math.round(

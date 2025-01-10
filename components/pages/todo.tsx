@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
 import { TodoList } from "@/components/todo-list";
 import { AddTodoDialog } from "@/components/add-todo-dialog";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -12,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { FiPlus, FiLogOut } from "react-icons/fi";
 import { useCategories } from "@/hooks/use-categories";
 import type { Todo } from "@/types/todo";
+import { createClient } from "@/utils/supabase/client";
 
 export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -19,6 +19,7 @@ export default function TodoPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { categories, isLoading: isCategoriesLoading } = useCategories();
   const router = useRouter();
+  const supabase = createClient();
 
   const fetchTodos = useCallback(async () => {
     try {
@@ -43,7 +44,7 @@ export default function TodoPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     fetchTodos();
@@ -65,7 +66,7 @@ export default function TodoPage() {
     return () => {
       channel.unsubscribe();
     };
-  }, [fetchTodos]);
+  }, [fetchTodos, supabase]);
 
   const handleSignOut = async () => {
     try {

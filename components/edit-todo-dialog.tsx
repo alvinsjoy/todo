@@ -37,7 +37,7 @@ import { Button } from "@/components/ui/button";
 import { CategorySelect } from "@/components/category-select";
 import { useCategories } from "@/hooks/use-categories";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 import { FiCalendar } from "react-icons/fi";
 import { Todo } from "@/types/todo";
 
@@ -68,6 +68,7 @@ export function EditTodoDialog({
     isLoading: isCategoriesLoading,
     refetch: refetchCategories,
   } = useCategories();
+  const supabase = createClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

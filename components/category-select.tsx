@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 import { Category } from "@/types/category";
 
 interface CategorySelectProps {
@@ -44,6 +44,7 @@ export function CategorySelect({
   const [newCategory, setNewCategory] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const supabase = createClient();
 
   const handleCreateCategory = async () => {
     if (!newCategory.trim()) {

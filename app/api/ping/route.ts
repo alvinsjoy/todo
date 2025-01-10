@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/client";
 
 export async function GET(request: Request) {
+  const supabase = createClient();
   const authHeader = request.headers.get("authorization");
   const expectedAuthHeader = `Bearer ${process.env.CRON_SECRET}`;
 

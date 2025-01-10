@@ -2,7 +2,6 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Provider } from "@/components/theme-provider";
-import { AuthWrapper } from "@/components/auth-wrapper";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,7 +21,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <Provider>
-          <AuthWrapper>{children}</AuthWrapper>
+          {children}
           <Toaster richColors closeButton />
         </Provider>
       </body>

@@ -15,7 +15,7 @@ export default function NotFound() {
       >
         <div className="space-y-2">
           <div className="flex justify-center mb-4">
-            <FiAlertCircle className="h-12 w-12 text-primary" />
+            <FiAlertCircle className="h-12 w-12 text-destructive" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Page Not Found</h1>
           <p className="text-muted-foreground">

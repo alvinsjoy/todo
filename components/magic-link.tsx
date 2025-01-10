@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { FaMagic } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
-
+import { createClient } from "@/utils/supabase/client";
 interface MagicLinkProps {
   getEmail: () => string;
 }
@@ -14,6 +13,7 @@ interface MagicLinkProps {
 export function MagicLink({ getEmail }: MagicLinkProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const supabase = createClient();
 
   async function handleMagicLinkSignIn(email: string) {
     setIsLoading(true);
