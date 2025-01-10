@@ -6,6 +6,7 @@ import { FaMagic } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
+
 interface MagicLinkProps {
   getEmail: () => string;
 }
@@ -20,9 +21,6 @@ export function MagicLink({ getEmail }: MagicLinkProps) {
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: {
-          emailRedirectTo: `${window.location.origin}`,
-        },
       });
       if (error) throw error;
 
