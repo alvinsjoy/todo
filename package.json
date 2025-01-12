@@ -25,7 +25,7 @@
     "@supabase/supabase-js": "^2.39.7",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "20.6.2",
-    "@types/react": "18.2.22",
+    "@types/react": "^18.3.12",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.15",
     "bufferutil": "^4.0.8",
