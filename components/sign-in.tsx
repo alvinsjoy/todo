@@ -22,18 +22,12 @@ import { Input } from "@/components/ui/input";
 import { MagicLink } from "@/components/magic-link";
 import { createClient } from "@/utils/supabase/client";
 
-const formSchema = z
-  .object({
-    email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+const formSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
-export function SignUpForm() {
+export function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -43,21 +37,20 @@ export function SignUpForm() {
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-      });
-
+      const { data, error } = await supabase.auth.signInWithPassword(values);
       if (error) throw error;
 
-      router.push("/verify");
+      if (!data.user?.email_confirmed_at) {
+        router.push("/verify");
+      } else {
+        router.push("/");
+      }
     } catch (error: any) {
       toast.error("Error", {
         description: error.message,
@@ -74,9 +67,9 @@ export function SignUpForm() {
       className="space-y-6 bg-card p-6 rounded-lg shadow-lg"
     >
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
         <p className="text-muted-foreground">
-          Enter your details to create your account
+          Enter your credentials to sign in
         </p>
       </div>
       <Form {...form}>
@@ -124,39 +117,17 @@ export function SignUpForm() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <FiLock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      className="pl-10"
-                      {...field}
-                      disabled={isLoading}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Sign Up"}
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
       </Form>
       <MagicLink getEmail={() => form.getValues("email")} />
       <div className="text-center">
         <p className="text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link href="/signin" className="text-primary hover:underline">
-            Sign in
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="text-primary hover:underline">
+            Sign up
           </Link>
         </p>
       </div>

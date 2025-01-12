@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { EditTodoDialog } from "@/components/edit-todo-dialog";
+import { EditTodoDialog } from "@/components/edit-todo";
 import { createClient } from "@/utils/supabase/client";
 import { Todo } from "@/types/todo";
 import { Category } from "@/types/category";

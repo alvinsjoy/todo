@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { toast } from "sonner";
 import { TodoList } from "@/components/todo-list";
-import { AddTodoDialog } from "@/components/add-todo-dialog";
+import { AddTodoDialog } from "@/components/add-todo";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { FiPlus, FiLogOut } from "react-icons/fi";

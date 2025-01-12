@@ -1,10 +1,10 @@
-import { SignInForm } from "@/components/sign-in-form";
+import { SignIn } from "@/components/sign-in";
 import { AuthLayout } from "@/components/auth-layout";
 
 export default function SignInPage() {
   return (
     <AuthLayout>
-      <SignInForm />
+      <SignIn />
     </AuthLayout>
   );
 }
