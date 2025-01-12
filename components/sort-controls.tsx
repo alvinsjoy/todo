@@ -21,11 +21,11 @@ import {
 
 const sortFields = [
   {
-    value: "date",
+    value: "due_date",
     label: "Date",
   },
   {
-    value: "name",
+    value: "title",
     label: "Name",
   },
   {
@@ -52,7 +52,7 @@ interface SortControlsProps {
 export function SortControls({ onSortChange }: SortControlsProps) {
   const [openField, setOpenField] = React.useState(false);
   const [openOrder, setOpenOrder] = React.useState(false);
-  const [sortField, setSortField] = React.useState("date");
+  const [sortField, setSortField] = React.useState("due_date");
   const [sortOrder, setSortOrder] = React.useState("desc");
 
   const handleFieldChange = (value: string) => {

@@ -19,6 +19,8 @@ export default function TodoPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>();
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortField, setSortField] = useState("due_date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const {
     categories,
     isLoading: isCategoriesLoading,
@@ -39,7 +41,8 @@ export default function TodoPage() {
         .from("todos")
         .select("*")
         .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+        .order("is_completed", { ascending: true })
+        .order(sortField, { ascending: sortOrder === "asc" });
 
       if (selectedCategory) {
         query = query.eq("category_id", selectedCategory);
@@ -60,7 +63,7 @@ export default function TodoPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [supabase, selectedCategory, searchQuery]);
+  }, [supabase, selectedCategory, searchQuery, sortField, sortOrder]);
 
   useEffect(() => {
     fetchTodos();
@@ -96,6 +99,11 @@ export default function TodoPage() {
     }
   };
 
+  const handleSortChange = (field: string, order: string) => {
+    setSortField(field);
+    setSortOrder(order as "asc" | "desc");
+  };
+
   if (isLoading || isCategoriesLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -116,6 +124,7 @@ export default function TodoPage() {
           onCategorySelect={setSelectedCategory}
           onSearch={setSearchQuery}
           onCategoryCreated={refetchCategories}
+          onSortChange={handleSortChange}
         />
 
         <SidebarInset className="flex-1">

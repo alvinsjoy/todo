@@ -98,15 +98,6 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
     return categories.find((c) => c.id === categoryId)?.name || "Uncategorized";
   };
 
-  const sortedTodos = [...todos].sort((a, b) => {
-    if (a.is_completed === b.is_completed) {
-      return (
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-    }
-    return a.is_completed ? 1 : -1;
-  });
-
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -124,7 +115,7 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
       </div>
 
       <AnimatePresence>
-        {sortedTodos.map((todo) => (
+        {todos.map((todo) => (
           <motion.div
             key={todo.id}
             initial={{ opacity: 0, y: 20 }}
