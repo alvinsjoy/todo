@@ -56,11 +56,13 @@ export function SortControls({ onSortChange }: SortControlsProps) {
   const [sortOrder, setSortOrder] = React.useState("desc");
 
   const handleFieldChange = (value: string) => {
+    setOpenField(false);
     setSortField(value);
     onSortChange(value, sortOrder);
   };
 
   const handleOrderChange = (value: string) => {
+    setOpenOrder(false);
     setSortOrder(value);
     onSortChange(sortField, value);
   };
