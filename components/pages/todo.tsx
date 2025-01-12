@@ -5,19 +5,25 @@ import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { toast } from "sonner";
 import { TodoList } from "@/components/todo-list";
-import { AddTodoDialog } from "@/components/add-todo";
+import { TodoSidebar } from "@/components/todo-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
-import { FiPlus, FiLogOut } from "react-icons/fi";
+import { FiLogOut } from "react-icons/fi";
 import { useCategories } from "@/hooks/use-categories";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import type { Todo } from "@/types/todo";
 import { createClient } from "@/utils/supabase/client";
 
 export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { categories, isLoading: isCategoriesLoading } = useCategories();
+  const [selectedCategory, setSelectedCategory] = useState<string>();
+  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    categories,
+    isLoading: isCategoriesLoading,
+    refetch: refetchCategories,
+  } = useCategories();
   const router = useRouter();
   const supabase = createClient();
 
@@ -29,11 +35,21 @@ export default function TodoPage() {
 
       if (!user) return;
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("todos")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
+
+      if (selectedCategory) {
+        query = query.eq("category_id", selectedCategory);
+      }
+
+      if (searchQuery) {
+        query = query.ilike("title", `%${searchQuery}%`);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 
@@ -44,7 +60,7 @@ export default function TodoPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [supabase]);
+  }, [supabase, selectedCategory, searchQuery]);
 
   useEffect(() => {
     fetchTodos();
@@ -92,53 +108,49 @@ export default function TodoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">My Todos</h1>
-          <div className="flex items-center space-x-4">
-            <ModeToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSignOut}
-              className="text-muted-foreground hover:text-foreground"
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <TodoSidebar
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategorySelect={setSelectedCategory}
+          onSearch={setSearchQuery}
+          onCategoryCreated={refetchCategories}
+        />
+
+        <SidebarInset className="flex-1">
+          <header className="border-b">
+            <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+              <h1 className="text-2xl font-bold">My Todos</h1>
+              <div className="flex items-center space-x-4">
+                <ModeToggle />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleSignOut}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <FiLogOut className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          </header>
+
+          <main className="container mx-auto px-6 py-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-8"
             >
-              <FiLogOut className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-8"
-        >
-          <div className="flex justify-end">
-            <Button
-              onClick={() => setIsDialogOpen(true)}
-              className="flex items-center space-x-2"
-            >
-              <FiPlus className="h-5 w-5" />
-              <span>Add Todo</span>
-            </Button>
-          </div>
-
-          <TodoList
-            todos={todos}
-            categories={categories}
-            onUpdate={fetchTodos}
-          />
-        </motion.div>
-      </main>
-
-      <AddTodoDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        onSuccess={fetchTodos}
-      />
-    </div>
+              <TodoList
+                todos={todos}
+                categories={categories}
+                onUpdate={fetchTodos}
+              />
+            </motion.div>
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }
