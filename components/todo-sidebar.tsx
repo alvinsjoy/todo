@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import { LuPlus, LuSearch, LuTag, LuTrash2 } from "react-icons/lu";
-import { toast } from "sonner";
-
-import { AddTodoDialog } from "@/components/add-todo";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { FaSort } from "react-icons/fa";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { AddTodoDialog } from "@/components/add-todo";
+import { SortControls } from "@/components/sort-controls";
 import {
   Sidebar,
   SidebarContent,
@@ -30,7 +30,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Category } from "@/types/category";
-import { createClient } from "@/utils/supabase/client";
+import { createCategory, deleteCategory } from "@/lib/category-actions";
 
 interface TodoSidebarProps {
   categories: Category[];
@@ -38,6 +38,7 @@ interface TodoSidebarProps {
   onCategorySelect: (categoryId: string | undefined) => void;
   onSearch: (query: string) => void;
   onCategoryCreated: () => void;
+  onSortChange?: (field: string, order: string) => void;
 }
 
 export function TodoSidebar({
@@ -46,6 +47,7 @@ export function TodoSidebar({
   onCategorySelect,
   onSearch,
   onCategoryCreated,
+  onSortChange,
 }: TodoSidebarProps) {
   const [isAddTodoOpen, setIsAddTodoOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
@@ -54,37 +56,15 @@ export function TodoSidebar({
   const [selectedCategoryForDeletion, setSelectedCategoryForDeletion] =
     useState<Category | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const supabase = createClient();
 
   const handleCreateCategory = async () => {
-    if (!newCategory.trim()) {
-      toast.error("Please enter a category name");
-      return;
-    }
-
     setIsCreatingCategory(true);
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+    const result = await createCategory(newCategory);
+    setIsCreatingCategory(false);
 
-      const { error } = await supabase.from("categories").insert({
-        name: newCategory.trim(),
-        user_id: user.id,
-      });
-
-      if (error) throw error;
-
-      toast.success("Category created");
+    if (result) {
       setNewCategory("");
       onCategoryCreated();
-    } catch (error: any) {
-      toast.error("Error creating category", {
-        description: error.message,
-      });
-    } finally {
-      setIsCreatingCategory(false);
     }
   };
 
@@ -92,34 +72,16 @@ export function TodoSidebar({
     if (!selectedCategoryForDeletion) return;
 
     setIsDeleting(true);
-    try {
-      const { error } = await supabase
-        .from("categories")
-        .delete()
-        .eq("id", selectedCategoryForDeletion.id);
+    const success = await deleteCategory(selectedCategoryForDeletion.id);
+    setIsDeleting(false);
 
-      if (error) throw error;
-      const { error: updateError } = await supabase
-        .from("todos")
-        .update({ category_id: null })
-        .eq("category_id", selectedCategoryForDeletion.id);
-
-      if (updateError) throw updateError;
-
+    if (success) {
       if (selectedCategory === selectedCategoryForDeletion.id) {
         onCategorySelect(undefined);
       }
-
-      toast.success("Category deleted");
       setIsDeleteDialogOpen(false);
       setSelectedCategoryForDeletion(null);
       onCategoryCreated();
-    } catch (error: any) {
-      toast.error("Error deleting category", {
-        description: error.message,
-      });
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -142,6 +104,15 @@ export function TodoSidebar({
         </SidebarHeader>
         <SidebarSeparator />
         <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>
+              <FaSort className="mr-2" /> Sort by
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SortControls onSortChange={onSortChange || (() => {})} />
+            </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarSeparator />
           <SidebarGroup>
             <SidebarGroupLabel>
               <LuTag className="mr-2" />

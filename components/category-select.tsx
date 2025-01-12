@@ -1,7 +1,4 @@
-"use client";
-
 import { useState } from "react";
-import { toast } from "sonner";
 import { LuPlus, LuTrash2 } from "react-icons/lu";
 import {
   Select,
@@ -21,8 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/utils/supabase/client";
 import { Category } from "@/types/category";
+import { createCategory, deleteCategory } from "@/lib/category-actions";
 
 interface CategorySelectProps {
   value?: string;
@@ -44,43 +41,17 @@ export function CategorySelect({
   const [newCategory, setNewCategory] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const supabase = createClient();
 
   const handleCreateCategory = async () => {
-    if (!newCategory.trim()) {
-      toast.error("Please enter a category name");
-      return;
-    }
-
     setIsCreating(true);
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+    const result = await createCategory(newCategory);
+    setIsCreating(false);
 
-      const { data, error } = await supabase
-        .from("categories")
-        .insert({
-          name: newCategory.trim(),
-          user_id: user.id,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast.success("Category created");
+    if (result) {
       setNewCategory("");
       setIsCreateDialogOpen(false);
-      onValueChange(data.id);
+      onValueChange(result.id);
       onCategoryCreated();
-    } catch (error: any) {
-      toast.error("Error creating category", {
-        description: error.message,
-      });
-    } finally {
-      setIsCreating(false);
     }
   };
 
@@ -88,33 +59,16 @@ export function CategorySelect({
     if (!selectedCategoryForDeletion) return;
 
     setIsDeleting(true);
-    try {
-      const { error } = await supabase
-        .from("categories")
-        .delete()
-        .eq("id", selectedCategoryForDeletion.id);
+    const success = await deleteCategory(selectedCategoryForDeletion.id);
+    setIsDeleting(false);
 
-      if (error) throw error;
-      const { error: updateError } = await supabase
-        .from("todos")
-        .update({ category_id: null })
-        .eq("category_id", selectedCategoryForDeletion.id);
-
-      if (updateError) throw updateError;
-
-      toast.success("Category deleted");
+    if (success) {
       setIsDeleteDialogOpen(false);
       setSelectedCategoryForDeletion(null);
       if (value === selectedCategoryForDeletion.id) {
         onValueChange("");
       }
       onCategoryCreated();
-    } catch (error: any) {
-      toast.error("Error deleting category", {
-        description: error.message,
-      });
-    } finally {
-      setIsDeleting(false);
     }
   };
 
