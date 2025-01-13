@@ -20,6 +20,11 @@ import { AddTodoDialog } from "@/components/add-todo";
 import { SortControls } from "@/components/sort-controls";
 import { ModeToggle } from "@/components/mode-toggle";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -34,12 +39,6 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Category } from "@/types/category";
 import {
   createCategory,
@@ -77,6 +76,7 @@ export function TodoSidebar({
   const [editedCategoryName, setEditedCategoryName] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [openPopoverId, setOpenPopoverId] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
@@ -206,34 +206,49 @@ export function TodoSidebar({
                     >
                       {category.name}
                     </SidebarMenuButton>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                    <Popover
+                      open={openPopoverId === category.id}
+                      onOpenChange={(open) => {
+                        setOpenPopoverId(open ? category.id : null);
+                      }}
+                    >
+                      <PopoverTrigger asChild>
                         <SidebarMenuAction showOnHover>
                           <FiMoreHorizontal className="h-4 w-4" />
                         </SidebarMenuAction>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent side="right" align="start">
-                        <DropdownMenuItem
-                          onSelect={() => {
+                      </PopoverTrigger>
+                      <PopoverContent
+                        side="right"
+                        align="start"
+                        className="w-44 p-1"
+                      >
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start gap-2"
+                          onClick={() => {
                             setSelectedCategoryForEdit(category);
                             setEditedCategoryName(category.name);
                             setIsEditDialogOpen(true);
+                            setOpenPopoverId(null);
                           }}
                         >
-                          <FiEdit2 className="mr-2 h-4 w-4" />
-                          <span>Edit Category</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => {
+                          <FiEdit2 className="h-4 w-4" />
+                          Edit Category
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start gap-2"
+                          onClick={() => {
                             setSelectedCategoryForDeletion(category);
                             setIsDeleteDialogOpen(true);
+                            setOpenPopoverId(null);
                           }}
                         >
-                          <LuTrash2 className="mr-2 h-4 w-4" />
-                          <span>Delete Category</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          <LuTrash2 className="h-4 w-4" />
+                          Delete Category
+                        </Button>
+                      </PopoverContent>
+                    </Popover>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
