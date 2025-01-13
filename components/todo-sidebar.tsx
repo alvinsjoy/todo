@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuPlus, LuSearch, LuTag, LuTrash2, LuLogOut } from "react-icons/lu";
-import { FiEdit2 } from "react-icons/fi";
+import { FiEdit2, FiMoreHorizontal } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { toast } from "sonner";
 import {
@@ -34,6 +34,12 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Category } from "@/types/category";
 import {
   createCategory,
@@ -200,27 +206,34 @@ export function TodoSidebar({
                     >
                       {category.name}
                     </SidebarMenuButton>
-                    <div className="flex">
-                      <SidebarMenuAction
-                        onClick={() => {
-                          setSelectedCategoryForEdit(category);
-                          setEditedCategoryName(category.name);
-                          setIsEditDialogOpen(true);
-                        }}
-                        showOnHover
-                      >
-                        <FiEdit2 className="h-4 w-4" />
-                      </SidebarMenuAction>
-                      <SidebarMenuAction
-                        onClick={() => {
-                          setSelectedCategoryForDeletion(category);
-                          setIsDeleteDialogOpen(true);
-                        }}
-                        showOnHover
-                      >
-                        <LuTrash2 className="h-4 w-4" />
-                      </SidebarMenuAction>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuAction showOnHover>
+                          <FiMoreHorizontal className="h-4 w-4" />
+                        </SidebarMenuAction>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent side="right" align="start">
+                        <DropdownMenuItem
+                          onSelect={() => {
+                            setSelectedCategoryForEdit(category);
+                            setEditedCategoryName(category.name);
+                            setIsEditDialogOpen(true);
+                          }}
+                        >
+                          <FiEdit2 className="mr-2 h-4 w-4" />
+                          <span>Edit Category</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onSelect={() => {
+                            setSelectedCategoryForDeletion(category);
+                            setIsDeleteDialogOpen(true);
+                          }}
+                        >
+                          <LuTrash2 className="mr-2 h-4 w-4" />
+                          <span>Delete Category</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
