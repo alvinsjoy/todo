@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LuPlus, LuTrash2 } from "react-icons/lu";
+import { FiEdit2 } from "react-icons/fi";
 import {
   Select,
   SelectContent,
@@ -19,7 +20,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Category } from "@/types/category";
-import { createCategory, deleteCategory } from "@/lib/category-actions";
+import {
+  createCategory,
+  deleteCategory,
+  updateCategory,
+} from "@/lib/category-actions";
 
 interface CategorySelectProps {
   value?: string;
@@ -36,11 +41,16 @@ export function CategorySelect({
 }: CategorySelectProps) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedCategoryForDeletion, setSelectedCategoryForDeletion] =
     useState<Category | null>(null);
+  const [selectedCategoryForEdit, setSelectedCategoryForEdit] =
+    useState<Category | null>(null);
   const [newCategory, setNewCategory] = useState("");
+  const [editedCategoryName, setEditedCategoryName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleCreateCategory = async () => {
     setIsCreating(true);
@@ -55,6 +65,24 @@ export function CategorySelect({
     }
   };
 
+  const handleEditCategory = async () => {
+    if (!selectedCategoryForEdit) return;
+
+    setIsEditing(true);
+    const result = await updateCategory(
+      selectedCategoryForEdit.id,
+      editedCategoryName
+    );
+    setIsEditing(false);
+
+    if (result) {
+      setEditedCategoryName("");
+      setIsEditDialogOpen(false);
+      setSelectedCategoryForEdit(null);
+      onCategoryCreated();
+    }
+  };
+
   const handleDeleteCategory = async () => {
     if (!selectedCategoryForDeletion) return;
 
@@ -63,11 +91,11 @@ export function CategorySelect({
     setIsDeleting(false);
 
     if (success) {
-      setIsDeleteDialogOpen(false);
-      setSelectedCategoryForDeletion(null);
       if (value === selectedCategoryForDeletion.id) {
         onValueChange("");
       }
+      setIsDeleteDialogOpen(false);
+      setSelectedCategoryForDeletion(null);
       onCategoryCreated();
     }
   };
@@ -87,19 +115,35 @@ export function CategorySelect({
               <SelectItem value={category.id} className="flex-1">
                 {category.name}
               </SelectItem>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setSelectedCategoryForDeletion(category);
-                  setIsDeleteDialogOpen(true);
-                }}
-              >
-                <LuTrash2 className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelectedCategoryForEdit(category);
+                    setEditedCategoryName(category.name);
+                    setIsEditDialogOpen(true);
+                  }}
+                >
+                  <FiEdit2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelectedCategoryForDeletion(category);
+                    setIsDeleteDialogOpen(true);
+                  }}
+                >
+                  <LuTrash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           ))}
           <Dialog
@@ -163,6 +207,32 @@ export function CategorySelect({
               {isDeleting ? "Deleting..." : "Delete Category"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Category</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <Input
+              placeholder="Category name"
+              value={editedCategoryName}
+              onChange={(e) => setEditedCategoryName(e.target.value)}
+            />
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleEditCategory} disabled={isEditing}>
+                {isEditing ? "Updating..." : "Update Category"}
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

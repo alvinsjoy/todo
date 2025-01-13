@@ -36,6 +36,34 @@ export async function createCategory(name: string) {
   }
 }
 
+export async function updateCategory(categoryId: string, name: string) {
+  const supabase = createClient();
+
+  if (!name.trim()) {
+    toast.error("Please enter a category name");
+    return null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("categories")
+      .update({ name: name.trim() })
+      .eq("id", categoryId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    toast.success("Category updated");
+    return data;
+  } catch (error: any) {
+    toast.error("Error updating category", {
+      description: error.message,
+    });
+    return null;
+  }
+}
+
 export async function deleteCategory(categoryId: string) {
   const supabase = createClient();
 

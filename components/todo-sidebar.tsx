@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuPlus, LuSearch, LuTag, LuTrash2, LuLogOut } from "react-icons/lu";
+import { FiEdit2 } from "react-icons/fi";
 import { FaSort } from "react-icons/fa";
 import { toast } from "sonner";
 import {
@@ -34,7 +35,11 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Category } from "@/types/category";
-import { createCategory, deleteCategory } from "@/lib/category-actions";
+import {
+  createCategory,
+  deleteCategory,
+  updateCategory,
+} from "@/lib/category-actions";
 import { createClient } from "@/utils/supabase/client";
 
 interface TodoSidebarProps {
@@ -58,9 +63,14 @@ export function TodoSidebar({
   const [newCategory, setNewCategory] = useState("");
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedCategoryForDeletion, setSelectedCategoryForDeletion] =
     useState<Category | null>(null);
+  const [selectedCategoryForEdit, setSelectedCategoryForEdit] =
+    useState<Category | null>(null);
+  const [editedCategoryName, setEditedCategoryName] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
   const supabase = createClient();
 
@@ -83,6 +93,24 @@ export function TodoSidebar({
 
     if (result) {
       setNewCategory("");
+      onCategoryCreated();
+    }
+  };
+
+  const handleEditCategory = async () => {
+    if (!selectedCategoryForEdit) return;
+
+    setIsEditing(true);
+    const result = await updateCategory(
+      selectedCategoryForEdit.id,
+      editedCategoryName
+    );
+    setIsEditing(false);
+
+    if (result) {
+      setEditedCategoryName("");
+      setIsEditDialogOpen(false);
+      setSelectedCategoryForEdit(null);
       onCategoryCreated();
     }
   };
@@ -172,15 +200,27 @@ export function TodoSidebar({
                     >
                       {category.name}
                     </SidebarMenuButton>
-                    <SidebarMenuAction
-                      onClick={() => {
-                        setSelectedCategoryForDeletion(category);
-                        setIsDeleteDialogOpen(true);
-                      }}
-                      showOnHover
-                    >
-                      <LuTrash2 className="h-4 w-4" />
-                    </SidebarMenuAction>
+                    <div className="flex">
+                      <SidebarMenuAction
+                        onClick={() => {
+                          setSelectedCategoryForEdit(category);
+                          setEditedCategoryName(category.name);
+                          setIsEditDialogOpen(true);
+                        }}
+                        showOnHover
+                      >
+                        <FiEdit2 className="h-4 w-4" />
+                      </SidebarMenuAction>
+                      <SidebarMenuAction
+                        onClick={() => {
+                          setSelectedCategoryForDeletion(category);
+                          setIsDeleteDialogOpen(true);
+                        }}
+                        showOnHover
+                      >
+                        <LuTrash2 className="h-4 w-4" />
+                      </SidebarMenuAction>
+                    </div>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -235,6 +275,32 @@ export function TodoSidebar({
               {isDeleting ? "Deleting..." : "Delete Category"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Category</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <Input
+              placeholder="Category name"
+              value={editedCategoryName}
+              onChange={(e) => setEditedCategoryName(e.target.value)}
+            />
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button
+                variant="outline"
+                onClick={() => setIsEditDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleEditCategory} disabled={isEditing}>
+                {isEditing ? "Updating..." : "Update Category"}
+              </Button>
+            </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
     </>
