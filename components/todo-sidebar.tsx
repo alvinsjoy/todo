@@ -115,6 +115,7 @@ export function TodoSidebar({
           <div className="relative">
             <LuSearch className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
+              name="search"
               placeholder="Search todos..."
               className="pl-8"
               onChange={(e) => onSearch(e.target.value)}
@@ -142,6 +143,7 @@ export function TodoSidebar({
             </SidebarGroupAction>
             <SidebarGroupContent>
               <Input
+                name="category"
                 placeholder="New category..."
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
