@@ -53,7 +53,7 @@ export function SortControls({ onSortChange }: SortControlsProps) {
   const [openField, setOpenField] = React.useState(false);
   const [openOrder, setOpenOrder] = React.useState(false);
   const [sortField, setSortField] = React.useState("due_date");
-  const [sortOrder, setSortOrder] = React.useState("desc");
+  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("asc");
 
   const handleFieldChange = (value: string) => {
     setOpenField(false);
@@ -63,7 +63,7 @@ export function SortControls({ onSortChange }: SortControlsProps) {
 
   const handleOrderChange = (value: string) => {
     setOpenOrder(false);
-    setSortOrder(value);
+    setSortOrder(value as "asc" | "desc");
     onSortChange(sortField, value);
   };
 

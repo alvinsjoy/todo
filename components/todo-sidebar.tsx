@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { LuPlus, LuSearch, LuTag, LuTrash2 } from "react-icons/lu";
+import { useRouter } from "next/navigation";
+import { LuPlus, LuSearch, LuTag, LuTrash2, LuLogOut } from "react-icons/lu";
 import { FaSort } from "react-icons/fa";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -15,9 +17,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AddTodoDialog } from "@/components/add-todo";
 import { SortControls } from "@/components/sort-controls";
+import { ModeToggle } from "@/components/mode-toggle";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupAction,
   SidebarGroupContent,
@@ -31,6 +35,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Category } from "@/types/category";
 import { createCategory, deleteCategory } from "@/lib/category-actions";
+import { createClient } from "@/utils/supabase/client";
 
 interface TodoSidebarProps {
   categories: Category[];
@@ -56,6 +61,20 @@ export function TodoSidebar({
   const [selectedCategoryForDeletion, setSelectedCategoryForDeletion] =
     useState<Category | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      router.push("/signin");
+    } catch (error: any) {
+      toast.error("Error signing out", {
+        description: error.message,
+      });
+    }
+  };
 
   const handleCreateCategory = async () => {
     setIsCreatingCategory(true);
@@ -166,6 +185,21 @@ export function TodoSidebar({
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
+        <SidebarSeparator />
+        <SidebarFooter>
+          <div className="flex items-center justify-between p-2">
+            <ModeToggle />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleSignOut}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <LuLogOut className="mr-2 h-4 w-4" />
+              Sign out
+            </Button>
+          </div>
+        </SidebarFooter>
       </Sidebar>
 
       <AddTodoDialog
