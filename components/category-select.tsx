@@ -31,6 +31,7 @@ interface CategorySelectProps {
   onValueChange: (value: string) => void;
   categories: Category[];
   onCategoryCreated: () => void;
+  disabled?: boolean;
 }
 
 export function CategorySelect({
@@ -38,6 +39,7 @@ export function CategorySelect({
   onValueChange,
   categories,
   onCategoryCreated,
+  disabled,
 }: CategorySelectProps) {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -103,7 +105,7 @@ export function CategorySelect({
   return (
     <div className="space-y-2">
       <Select value={value} onValueChange={onValueChange}>
-        <SelectTrigger>
+        <SelectTrigger disabled={disabled}>
           <SelectValue placeholder="Select category" />
         </SelectTrigger>
         <SelectContent>

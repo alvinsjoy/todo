@@ -5,6 +5,7 @@ import * as z from "zod";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
+import { Portal } from "@radix-ui/react-portal";
 import {
   Dialog,
   DialogContent,
@@ -160,6 +161,7 @@ export function EditTodoDialog({
                       onValueChange={field.onChange}
                       categories={categories}
                       onCategoryCreated={refetchCategories}
+                      disabled={isCategoriesLoading}
                     />
                   </FormControl>
                   <FormMessage />
@@ -197,7 +199,7 @@ export function EditTodoDialog({
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Due Date</FormLabel>
-                  <Popover>
+                  <Popover modal={true}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -216,17 +218,19 @@ export function EditTodoDialog({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date(new Date().setHours(0, 0, 0, 0))
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
+                    <Portal>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date < new Date(new Date().setHours(0, 0, 0, 0))
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Portal>
                   </Popover>
                   <FormMessage />
                 </FormItem>
