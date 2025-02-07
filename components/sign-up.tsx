@@ -7,7 +7,7 @@ import { motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { FiLock, FiAtSign } from "react-icons/fi";
+import { FiLock, FiAtSign, FiLogIn } from "react-icons/fi";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -147,6 +147,7 @@ export function SignUp() {
             )}
           />
           <Button type="submit" className="w-full" disabled={isLoading}>
+            <FiLogIn className="mr-2 h-4 w-4" />
             {isLoading ? "Creating account..." : "Sign Up"}
           </Button>
         </form>
