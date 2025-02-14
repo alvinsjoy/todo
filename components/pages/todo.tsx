@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { toast } from "sonner";
 import { TodoList } from "@/components/todo-list";
 import { TodoSidebar } from "@/components/todo-sidebar";
+import { SidebarToggle } from "@/components/sidebar-toggle";
 import { useCategories } from "@/hooks/use-categories";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import type { Todo } from "@/types/todo";
@@ -111,7 +112,8 @@ export default function TodoPage() {
 
         <SidebarInset className="flex-1">
           <header className="border-b">
-            <div className="container mx-auto px-6 py-4">
+            <div className="container mx-auto px-6 py-4 flex items-center gap-4">
+              <SidebarToggle />
               <h1 className="text-2xl font-bold">My Todos</h1>
             </div>
           </header>
