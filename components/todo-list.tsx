@@ -66,32 +66,37 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
   }, [completionPercentage, prevCompletion]);
 
   const handleToggleComplete = async (todo: Todo) => {
-    const { error } = await supabase
-      .from("todos")
-      .update({ is_completed: !todo.is_completed })
-      .eq("id", todo.id);
+    toast.promise(
+      (async () => {
+        const { error } = await supabase
+          .from("todos")
+          .update({ is_completed: !todo.is_completed })
+          .eq("id", todo.id);
 
-    if (error) {
-      toast.error("Error", {
-        description: "Failed to update todo",
-      });
-      return;
-    }
-
-    onUpdate();
+        if (error) throw error;
+        onUpdate();
+      })(),
+      {
+        loading: "Updating todo...",
+        success: "Todo updated successfully",
+        error: "Failed to update todo",
+      }
+    );
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("todos").delete().eq("id", id);
-
-    if (error) {
-      toast.error("Error", {
-        description: "Failed to delete todo",
-      });
-      return;
-    }
-
-    onUpdate();
+    toast.promise(
+      (async () => {
+        const { error } = await supabase.from("todos").delete().eq("id", id);
+        if (error) throw error;
+        onUpdate();
+      })(),
+      {
+        loading: "Deleting todo...",
+        success: "Todo deleted successfully",
+        error: "Failed to delete todo",
+      }
+    );
   };
 
   const getCategoryName = (categoryId: string) => {
@@ -185,6 +190,7 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
                   <Button
                     variant="outline"
                     size="icon"
+                    className="hover:text-green-500"
                     onClick={() => handleToggleComplete(todo)}
                   >
                     <motion.div
@@ -209,6 +215,7 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
                   <Button
                     variant="outline"
                     size="icon"
+                    className="hover:text-primary"
                     onClick={() => setEditingTodo(todo)}
                   >
                     <FiEdit2 className="h-4 w-4" />
@@ -216,6 +223,7 @@ export function TodoList({ todos, categories, onUpdate }: TodoListProps) {
                   <Button
                     variant="outline"
                     size="icon"
+                    className="hover:text-red-500"
                     onClick={() => handleDelete(todo.id)}
                   >
                     <FiTrash2 className="h-4 w-4" />

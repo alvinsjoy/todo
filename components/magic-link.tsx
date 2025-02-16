@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaMagic } from "react-icons/fa";
@@ -17,6 +15,9 @@ export function MagicLink({ getEmail }: MagicLinkProps) {
   const supabase = createClient();
 
   async function handleMagicLinkSignIn(email: string) {
+    const toastId = toast.loading("Sending magic link...", {
+      description: "Please check your email for the login link",
+    });
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOtp({
@@ -33,6 +34,7 @@ export function MagicLink({ getEmail }: MagicLinkProps) {
         description: error.message,
       });
     } finally {
+      toast.dismiss(toastId);
       setIsLoading(false);
     }
   }

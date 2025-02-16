@@ -224,7 +224,7 @@ export function TodoSidebar({
                       >
                         <Button
                           variant="ghost"
-                          className="w-full justify-start gap-2"
+                          className="w-full justify-start gap-2 hover:text-primary"
                           onClick={() => {
                             setSelectedCategoryForEdit(category);
                             setEditedCategoryName(category.name);
@@ -237,7 +237,7 @@ export function TodoSidebar({
                         </Button>
                         <Button
                           variant="ghost"
-                          className="w-full justify-start gap-2"
+                          className="w-full justify-start gap-2 hover:text-red-500"
                           onClick={() => {
                             setSelectedCategoryForDeletion(category);
                             setIsDeleteDialogOpen(true);

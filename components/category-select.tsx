@@ -121,7 +121,7 @@ export function CategorySelect({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-8 w-8 hover:text-primary"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -135,7 +135,7 @@ export function CategorySelect({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-8 w-8 hover:text-red-500"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();

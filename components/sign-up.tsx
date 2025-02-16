@@ -49,22 +49,25 @@ export function SignUp() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-      });
 
-      if (error) throw error;
+    toast.promise(
+      (async () => {
+        const { error } = await supabase.auth.signUp({
+          email: values.email,
+          password: values.password,
+        });
 
-      router.push("/verify");
-    } catch (error: any) {
-      toast.error("Error", {
-        description: error.message,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+        if (error) throw error;
+        router.push("/verify");
+      })(),
+      {
+        loading: "Creating account...",
+        success: "Account created successfully!",
+        error: (error) => error.message,
+      }
+    );
+
+    setIsLoading(false);
   }
 
   return (

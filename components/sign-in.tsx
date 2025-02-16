@@ -42,22 +42,26 @@ export function SignIn() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword(values);
-      if (error) throw error;
 
-      if (!data.user?.email_confirmed_at) {
-        router.push("/verify");
-      } else {
-        router.push("/");
+    toast.promise(
+      (async () => {
+        const { data, error } = await supabase.auth.signInWithPassword(values);
+        if (error) throw error;
+
+        if (!data.user?.email_confirmed_at) {
+          router.push("/verify");
+        } else {
+          router.push("/");
+        }
+      })(),
+      {
+        loading: "Signing in...",
+        success: "Signed in successfully!",
+        error: (error) => error.message,
       }
-    } catch (error: any) {
-      toast.error("Error", {
-        description: error.message,
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    );
+
+    setIsLoading(false);
   }
 
   return (

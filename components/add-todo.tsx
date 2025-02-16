@@ -81,6 +81,7 @@ export function AddTodoDialog({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    const toastId = toast.loading("Adding todo...");
     setIsLoading(true);
     try {
       const {
@@ -110,6 +111,7 @@ export function AddTodoDialog({
         description: error.message,
       });
     } finally {
+      toast.dismiss(toastId);
       setIsLoading(false);
     }
   }

@@ -83,6 +83,7 @@ export function EditTodoDialog({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    const toastId = toast.loading("Updating todo...");
     setIsLoading(true);
     try {
       const { error } = await supabase
@@ -107,6 +108,7 @@ export function EditTodoDialog({
         description: error.message,
       });
     } finally {
+      toast.dismiss(toastId);
       setIsLoading(false);
     }
   }
